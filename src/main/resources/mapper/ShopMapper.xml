@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ksgfk.windchimeweb.mapper.ShopMapper">
+    <resultMap id="InterFate" type="com.github.ksgfk.windchimeweb.entity.IntertwinedFateGoods">
+        <result column="id" property="id"/>
+        <result column="price" property="price"/>
+        <result column="count" property="count"/>
+        <result column="extra_count" property="extraCount"/>
+        <result column="discount" property="discount"/>
+        <result column="uri" property="uri"/>
+    </resultMap>
+
+    <resultMap id="UserShopItem" type="com.github.ksgfk.windchimeweb.entity.UserShopItemAllInfo">
+        <result column="goodsId" jdbcType="INTEGER" property="goodsId"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="discount" jdbcType="INTEGER" property="discount"/>
+        <result column="special_uri" jdbcType="VARCHAR" property="specialUri"/>
+        <result column="itemId" jdbcType="INTEGER" property="itemId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="position" jdbcType="VARCHAR" property="position"/>
+        <result column="uriName" jdbcType="VARCHAR" property="uriName"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+        <result column="rare" property="rare"/>
+        <result column="has_buy" property="hasBuy"/>
+        <result column="group" property="group"/>
+    </resultMap>
+
+    <resultMap id="UserIntertwinedFate" type="com.github.ksgfk.windchimeweb.entity.UserIntertwinedFate">
+        <result column="userId" jdbcType="INTEGER" property="userId"/>
+        <result column="fate_count" jdbcType="INTEGER" property="count"/>
+    </resultMap>
+
+    <resultMap id="GoodsKey" type="com.github.ksgfk.windchimeweb.entity.GoodsKey">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="itemId" jdbcType="INTEGER" property="itemId"/>
+    </resultMap>
+
+    <sql id="UserShopItemColumn">
+        goods.id AS goodsId,
+        item.id AS itemId,
+        name,
+        position,
+        uriName,
+        type,
+        description,
+        price,
+        discount,
+        special_uri,
+        rare,
+        has_buy,
+        `group`
+    </sql>
+
+    <select id="selectAllInterFates" resultMap="InterFate">
+        select * from intertwined_fate
+    </select>
+
+    <select id="selectInterFate" resultMap="InterFate">
+        select * from intertwined_fate where id=#{id}
+    </select>
+
+    <delete id="deleteUserShopItems">
+        delete from user_shop_item where userId=#{id}
+    </delete>
+
+    <select id="selectUserShopGoodsList" resultMap="UserShopItem">
+        select
+        <include refid="UserShopItemColumn"/>
+        from goods,item,user_shop_item
+        where goods.itemId=item.id and goodsId=goods.id and userId=#{id}
+    </select>
+
+    <select id="selectUserShopGoods" resultMap="UserShopItem">
+        select
+        <include refid="UserShopItemColumn"/>
+        from goods,item,user_shop_item
+        where goods.itemId=item.id and
+        user_shop_item.goodsId=goods.id and
+        user_shop_item.userId=#{userId} and
+        user_shop_item.goodsId=#{goodsId}
+    </select>
+
+    <select id="selectUserFateCount" resultMap="UserIntertwinedFate">
+        select * from user_fate where userId=#{id}
+    </select>
+
+    <insert id="insertUserFate">
+        insert into user_fate values (#{userId},#{count})
+    </insert>
+
+    <update id="updateUserFate">
+        update user_fate set fate_count=#{count} where userId=#{userId}
+    </update>
+
+    <update id="updateUserMoney">
+        update user set Money=#{money} where id=#{userId}
+    </update>
+
+    <insert id="insertUserHasItem">
+        insert into user_has_item values (#{id},#{userId},#{itemId},#{rare},#{prim},#{minor},'1')
+    </insert>
+
+    <update id="updateUserShopItemHasBuy">
+        update user_shop_item set has_buy=#{hasBuy} where userId=#{userId} and goodsId=#{goodsId}
+    </update>
+
+    <select id="selectActiveGoodsKey" resultMap="GoodsKey">
+        select id,itemId from goods where is_active=1
+    </select>
+
+    <insert id="insertUserShopGoods">
+        insert into user_shop_item values
+        <foreach collection="items" item="i" separator=",">
+            (#{i.userId},#{i.goodsId},#{i.rare},#{i.hasBuy})
+        </foreach>
+    </insert>
+
+    <update id="updateUserLastRefreshShop">
+        update user set lastRefreshShop=#{time} where id=#{id}
+    </update>
+
+    <select id="userHasItemCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) as cnt FROM `user_has_item` WHERE userId=#{userId}
+    </select>
+</mapper>

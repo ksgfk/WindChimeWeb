@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ksgfk.windchimeweb.mapper.UserHasItemMapper">
+    <resultMap id="BaseResultMap" type="com.github.ksgfk.windchimeweb.entity.UserHasItem">
+        <id column="userId" jdbcType="INTEGER" property="userId"/>
+        <id column="itemId" jdbcType="INTEGER" property="itemId"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+        <result column="primary" jdbcType="VARCHAR" property="primary"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.github.ksgfk.windchimeweb.entity.UserHasItem">
+        <result column="minor" jdbcType="LONGVARCHAR" property="minor"/>
+    </resultMap>
+
+    <insert id="insertUserItem">
+        insert into user_has_item () values (#{userId},#{itemId},#{rare},#{primary},#{minor})
+    </insert>
+</mapper>

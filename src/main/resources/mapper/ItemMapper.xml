@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ksgfk.windchimeweb.mapper.ItemMapper">
+    <resultMap id="BaseResultMap" type="com.github.ksgfk.windchimeweb.entity.Item">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="position" jdbcType="VARCHAR" property="position"/>
+        <result column="uriName" jdbcType="VARCHAR" property="uriName"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.github.ksgfk.windchimeweb.entity.Item">
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+    </resultMap>
+
+    <resultMap id="ItemPrimaryPropertyInfo" type="com.github.ksgfk.windchimeweb.entity.ItemPrimaryPropertyInfo">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="primary" jdbcType="INTEGER" property="primary"/>
+        <result column="primary_weight" jdbcType="INTEGER" property="weight"/>
+    </resultMap>
+
+    <resultMap id="ItemMinorPropertyInfo" type="com.github.ksgfk.windchimeweb.entity.ItemMinorPropertyInfo">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="minor" jdbcType="INTEGER" property="minor"/>
+        <result column="minor_weight" jdbcType="INTEGER" property="weight"/>
+    </resultMap>
+
+    <resultMap id="BaseItemProperty" type="com.github.ksgfk.windchimeweb.entity.ItemProperty">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="percentage" property="percentage"/>
+        <result column="type" property="type"/>
+        <result column="increase" property="increase"/>
+    </resultMap>
+
+    <select id="selectPrimaryInfoByItemId" resultMap="ItemPrimaryPropertyInfo">
+        select t.id,t.primary,t.primary_weight from item_position_primory as t
+        where position=(select position from item where id=#{id})
+    </select>
+
+    <select id="selectMinorInfoByItemId" resultMap="ItemMinorPropertyInfo">
+        select t.id,t.minor,t.minor_weight from item_position_minor as t
+        where position=(select position from item where id=#{id})
+    </select>
+
+    <select id="selectItemProperty" resultMap="BaseItemProperty">
+        select * from item_property where id=#{id}
+    </select>
+</mapper>

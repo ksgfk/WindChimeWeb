@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ksgfk.windchimeweb.mapper.GoodsMapper">
+    <resultMap id="BaseResultMap" type="com.github.ksgfk.windchimeweb.entity.Goods">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="itemId" jdbcType="INTEGER" property="itemId"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="on_sale" jdbcType="INTEGER" property="onSale"/>
+    </resultMap>
+
+    <resultMap id="GoodsWithItem" type="com.github.ksgfk.windchimeweb.entity.GoodsWithItemInfo">
+        <id column="goodsId" jdbcType="INTEGER" property="goodsId"/>
+        <result column="itemId" jdbcType="INTEGER" property="itemId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="position" jdbcType="VARCHAR" property="position"/>
+        <result column="uriName" jdbcType="VARCHAR" property="uriName"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+        <result column="on_sale" jdbcType="INTEGER" property="onSale"/>
+        <result column="special_uri" jdbcType="VARCHAR" property="specialUri"/>
+    </resultMap>
+
+    <resultMap id="GoodsItemIdWithPrice" type="com.github.ksgfk.windchimeweb.entity.GoodsItemIdWithPrice">
+        <result column="itemId" jdbcType="INTEGER" property="itemId"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+    </resultMap>
+
+    <sql id="GoodsWithItemColumn">
+        goods.id AS goodsId,
+        item.id AS itemId,
+        name,
+        position,
+        uriName,
+        type,
+        description,
+        price,
+        count,
+        on_sale,
+        special_uri
+    </sql>
+
+    <select id="selectAllItems" resultMap="GoodsWithItem">
+        SELECT
+        <include refid="GoodsWithItemColumn"/>
+        FROM `goods`,`item`
+        WHERE goods.itemId = item.id
+        LIMIT #{offset},#{count}
+    </select>
+
+    <select id="selectAllIntertwinedFate" resultMap="GoodsWithItem">
+        SELECT
+        <include refid="GoodsWithItemColumn"/>
+        FROM `goods`,`item`
+        WHERE goods.itemId = item.id AND item.name="纠缠之缘"
+    </select>
+
+    <select id="selectItemFuzzy" resultMap="GoodsWithItem">
+        SELECT
+        <include refid="GoodsWithItemColumn"/>
+        FROM `goods`,`item`
+        WHERE goods.itemId = item.id AND item.name LIKE concat('%',#{key},'%')
+        LIMIT #{offset},#{count}
+    </select>
+
+    <select id="selectById" resultMap="GoodsWithItem">
+        select
+        <include refid="GoodsWithItemColumn"/>
+        from goods,item
+        where goods.itemId=item.id and id=#{id}
+    </select>
+
+    <select id="selectItemIdWithPrice" resultMap="GoodsItemIdWithPrice">
+        select itemId,price from goods where id=#{id}
+    </select>
+
+    <select id="selectAllIdsNoIntertwinedFate" resultMap="GoodsWithItem">
+        SELECT
+        <include refid="GoodsWithItemColumn"/>
+        FROM `goods`,`item`
+        where goods.itemId = item.id AND goods.itemId != 1
+    </select>
+</mapper>
